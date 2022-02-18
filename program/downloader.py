@@ -1,12 +1,15 @@
 # Copyright (C) 2021 By Veez Music-Project
 
+from __future__ import unicode_literals
+
 import os
 import re
+import math
 import time
 import asyncio
-import traceback
-
 import lyricsgenius
+from random import randint
+from urllib.parse import urlparse
 
 import aiofiles
 import aiohttp
@@ -21,26 +24,34 @@ from youtubesearchpython import VideosSearch
 from yt_dlp import YoutubeDL
 
 from config import BOT_USERNAME as bn
-from driver.decorators import check_blacklist
+from driver.decorators import humanbytes
 from driver.filters import command, other_filters
-from driver.database.dbpunish import is_gbanned_user
-from driver.utils import remove_if_exists
+
+
+ydl_opts = {
+    'format': 'best',
+    'keepvideo': True,
+    'prefer_ffmpeg': False,
+    'geo_bypass': True,
+    'outtmpl': '%(title)s.%(ext)s',
+    'quite': True
+}
+
+is_downloading = False
 
 
 @Client.on_message(command(["song", f"song@{bn}"]) & ~filters.edited)
-@check_blacklist()
-async def song_downloader(_, message):
-    await message.delete()
+def song(_, message):
+    global is_downloading
     query = " ".join(message.command[1:])
-    m = await message.reply("🔎 finding song...")
-    ydl_ops = {
-        'format': 'bestaudio[ext=m4a]',
-        'keepvideo': True,
-        'prefer_ffmpeg': False,
-        'geo_bypass': True,
-        'outtmpl': '%(title)s.%(ext)s',
-        'quite': True,
-    }
+    if is_downloading:
+        message.reply(
+            "» Other download is in progress, please try again after some time !"
+        )
+        return
+    is_downloading = True
+    m = message.reply("🔎 finding song...")
+    ydl_ops = {"format": "bestaudio[ext=m4a]"}
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
         link = f"https://youtube.com{results[0]['url_suffix']}"
@@ -52,10 +63,10 @@ async def song_downloader(_, message):
         duration = results[0]["duration"]
 
     except Exception as e:
-        await m.edit("❌ song not found.\n\n» Give me a valid song name !")
+        m.edit("❌ song not found.\n\nplease give a valid song name !")
         print(str(e))
         return
-    await m.edit("📥 downloading song...")
+    m.edit("📥 downloading song...")
     try:
         with yt_dlp.YoutubeDL(ydl_ops) as ydl:
             info_dict = ydl.extract_info(link, download=False)
@@ -67,8 +78,8 @@ async def song_downloader(_, message):
         for i in range(len(dur_arr) - 1, -1, -1):
             dur += int(float(dur_arr[i])) * secmul
             secmul *= 60
-        await m.edit("📤 uploading song...")
-        await message.reply_audio(
+        m.edit("📤 uploading song...")
+        message.reply_audio(
             audio_file,
             caption=rep,
             performer=host,
@@ -77,14 +88,15 @@ async def song_downloader(_, message):
             title=title,
             duration=dur,
         )
-        await m.delete()
-
+        m.delete()
+        is_downloading = False
     except Exception as e:
-        await m.edit("❌ error, wait for bot owner to fix")
+        m.edit("❌ error, wait for bot owner to fix")
         print(e)
+
     try:
-        remove_if_exists(audio_file)
-        remove_if_exists(thumb_name)
+        os.remove(audio_file)
+        os.remove(thumb_name)
     except Exception as e:
         print(e)
 
@@ -92,9 +104,8 @@ async def song_downloader(_, message):
 @Client.on_message(
     command(["vsong", f"vsong@{bn}", "video", f"video@{bn}"]) & ~filters.edited
 )
-@check_blacklist()
-async def video_downloader(_, message):
-    await message.delete()
+async def vsong(client, message):
+    global is_downloading
     ydl_opts = {
         "format": "best",
         "keepvideo": True,
@@ -104,6 +115,11 @@ async def video_downloader(_, message):
         "quite": True,
     }
     query = " ".join(message.command[1:])
+    if is_downloading:
+        return await message.reply(
+            "» Other download is in progress, please try again after some time !"
+        )
+    is_downloading = True
     try:
         results = YoutubeSearch(query, max_results=1).to_dict()
         link = f"https://youtube.com{results[0]['url_suffix']}"
@@ -124,7 +140,6 @@ async def video_downloader(_, message):
             ytdl_data = ytdl.extract_info(link, download=True)
             file_name = ytdl.prepare_filename(ytdl_data)
     except Exception as e:
-        traceback.print_exc()
         return await msg.edit(f"🚫 error: `{e}`")
     preview = wget.download(thumbnail)
     await msg.edit("📤 uploading video...")
@@ -134,15 +149,15 @@ async def video_downloader(_, message):
         thumb=preview,
         caption=ytdl_data["title"],
     )
+    is_downloading = False
     try:
-        remove_if_exists(file_name)
+        os.remove(file_name)
         await msg.delete()
     except Exception as e:
         print(e)
 
 
 @Client.on_message(command(["lyric", f"lyric@{bn}", "lyrics"]))
-@check_blacklist()
 async def get_lyric_genius(_, message: Message):
     if len(message.command) < 2:
         return await message.reply_text("**usage:**\n\n/lyrics (song name)")
@@ -166,9 +181,9 @@ async def get_lyric_genius(_, message: Message):
             out_file.write(str(xxx.strip()))
         await message.reply_document(
             document=filename,
-            caption=f"**OUTPUT:**\n\n`attached lyrics text`",
+            caption=f"**OUTPUT:**\n\n`Lyrics Text`",
             quote=False,
         )
-        remove_if_exists(filename)
+        os.remove(filename)
     else:
         await m.edit(xxx)
