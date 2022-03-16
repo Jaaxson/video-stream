@@ -57,25 +57,25 @@ async def _human_time_duration(seconds):
 )
 async def start_(client: Client, message: Message):
     await message.reply_text(
-        f"""✨ **اهلا بك {message.from_user.mention()} !**\n
-💭 [{BOT_NAME}](https://t.me/{BOT_USERNAME}) **يتيح لك تشغيل الموسيقى والفيديو في مجموعات من خلال المكالمات الجديدة في Telegram! **
+        f"""✨ **مرحبا عزيزي ↤ {message.from_user.mention()} !**\n
+💭 **انا بوت استطيع تشغيل الموسيقي والفديو في محادثتك الصوتية**
 
-💡 **اكتشف جميع أوامر البوت وكيفية عملها من خلال النقر على زر » 📚 زر الاوامر**
+💡 تعلم طريقة تشغيلي واوامر التحكم بي عن طريق  » 📚 الاوامر !
 
-🔖 **لمعرفة كيفية استخدام هذا البوت ، يرجى النقر فوق » ❓ زر دليل الاستخدام**
+🔖 لتعلم طريقة تشغيلي بمجموعتك اضغط علي » ❓طريقة التفعيل !
 """,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        "اضـف الـبـوت لــ مـجـمـوعـتـك 𓆩💗𓆪",
+                        "➕اضـف الـبـوت لـمـجـمـوعـتـك➕",
                         url=f"https://t.me/{BOT_USERNAME}?startgroup=true",
                     )
                 ],
-                [InlineKeyboardButton("❓ طريقة الاستخدام", callback_data="cbhowtouse")],
+                [InlineKeyboardButton("❓ طريقة التفعيل", callback_data="cbhowtouse")],
                 [
                     InlineKeyboardButton("📚 الاوامر", callback_data="cbcmds"),
-                    InlineKeyboardButton("❤️ مطور البوت", url=f"https://t.me/{OWNER_NAME}"),
+                    InlineKeyboardButton("❤️ المطور", url=f"https://t.me/{OWNER_NAME}"),
                 ],
                 [
                     InlineKeyboardButton(
@@ -87,7 +87,7 @@ async def start_(client: Client, message: Message):
                 ],
                 [
                     InlineKeyboardButton(
-                        "البشمبرمج جاكسون 🌐", url="https://t.me/J_X_S1"
+                        "𓌹●↯‌•𓆩 𝗧𝗶𝗸 𝗧𝗼𝗸 : حكومه 𓆪•↯●𓌺", url="https://t.me/T6_ZZ"
                     )
                 ],
             ]
@@ -97,10 +97,9 @@ async def start_(client: Client, message: Message):
 
 
 @Client.on_message(
-    command(["alive", f"alive@{BOT_USERNAME}"]) & filters.group & ~filters.edited
+    command(["برمج السورس", f"كومه", f"كومة", f"لسورس", f"اك", f"اكسون"]) & filters.group & ~filters.edited
 )
-async def alive(c: Client, message: Message):
-    chat_id = message.chat.id
+async def alive(client: Client, message: Message):
     current_time = datetime.utcnow()
     uptime_sec = (current_time - START_TIME).total_seconds()
     uptime = await _human_time_duration(int(uptime_sec))
@@ -108,30 +107,34 @@ async def alive(c: Client, message: Message):
     keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("✨ جروب الدعم", url=f"https://t.me/{GROUP_SUPPORT}"),
+                InlineKeyboardButton("𓌹●↯‌•𓆩 𝗧𝗶𝗸 𝗧𝗼𝗸 : حكومه 𓆪•↯●𓌺", url=f"https://t.me/T6_ZZ"),
+            ],
+            [
                 InlineKeyboardButton(
-                    "📣 قناة السورس", url=f"https://t.me/J_X_S3"
+                    "قناه السورس🖤", url=f"https://t.me/sseroc"
                 ),
+            ],
+            [
+                InlineKeyboardButton("♡اضف البوت الى مجموعتك♡", url=f"https://t.me/{BOT_USERNAME}?startgroup=true"),
             ]
         ]
     )
 
-    alive = f"**هلو {message.from_user.mention()}, i'm {BOT_NAME}**\n\n🧑🏼‍💻 سيدى: [{ALIVE_NAME}](https://t.me/{OWNER_NAME})\n👾 نسخة البوت: `v{__version__}`\n🔥 نسخة بيروجرام: `{pyrover}`\n🐍 نسخة بايثون: `{__python_version__}`\n✨ PyTgCalls نسخة: `{pytover.__version__}`\n🆙 حالة الجهوزية: `{uptime}`\n\n❤ **شكرا لإضافتي هنا ، لتشغيل الفيديو & الموسيقى في دردشة الفيديو الجماعية الخاصة بك**"
+    alive = f"ᴘʀᴏɢʀᴀᴍᴍᴇʀ [𓆩 𝗧𝗶𝗸 𝗧𝗼𝗸 : حكومه 𓆪](https://t.me/T6_ZZ) 𖡼\nᴛᴏ ᴄᴏᴍᴍụɴɪᴄᴀᴛᴇ ᴛᴏɢᴇᴛʜᴇʀ 𖡼\nғᴏʟʟᴏᴡ ᴛʜᴇ ʙụᴛᴛᴏɴѕ ʟᴏᴡᴇʀ 𖡼"
 
-    await c.send_photo(
-        chat_id,
+    await message.reply_photo(
         photo=f"{ALIVE_IMG}",
         caption=alive,
         reply_markup=keyboard,
     )
 
 
-@Client.on_message(command(["ping", f"ping@{BOT_USERNAME}", "بينج"]) & ~filters.edited)
+@Client.on_message(command(["ping", f"بينج"]) & ~filters.edited)
 async def ping_pong(client: Client, message: Message):
     start = time()
     m_reply = await message.reply_text("pinging...")
     delta_ping = time() - start
-    await m_reply.edit_text("🏓 `البينج مظبوط يجاكسون!!`\n" f"⚡️ `{delta_ping * 1000:.3f} ms`")
+    await m_reply.edit_text("🏓 `PONG!!`\n" f"⚡️ `{delta_ping * 1000:.3f} ms`")
 
 
 @Client.on_message(command(["uptime", f"uptime@{BOT_USERNAME}"]) & ~filters.edited)
@@ -141,8 +144,8 @@ async def get_uptime(client: Client, message: Message):
     uptime = await _human_time_duration(int(uptime_sec))
     await message.reply_text(
         "🤖 bot status:\n"
-        f"• **مدة التشغيل:** `{uptime}`\n"
-        f"• **وقت البدء:** `{START_TIME_ISO}`"
+        f"• **uptime:** `{uptime}`\n"
+        f"• **start time:** `{START_TIME_ISO}`"
     )
 
 
@@ -169,18 +172,23 @@ async def new_chat(c: Client, m: Message):
     for member in m.new_chat_members:
         if member.id == bot_id:
             return await m.reply(
-                "❤️ شكرا لإضافتي إلى **مجموعتك** !\n\n"
-                "عيّنني كمسؤول في **مجموعتك**, وإلا فلن أتمكن من العمل بشكل صحيح ، ولا تنسى الكتابة `/userbotjoin` لدعوة المساعد.\n\n"
-                "Once done, then type `/reload`",
+                "❤️ **شكرا لإضافتي إلى المجموعة !**\n\n"
+                "قم بترقيتي كمسؤول عن المجموعة لكي أتمكن من العمل بشكل صحيح\nولا تنسى كتابة `/انضم` لدعوة الحساب المساعد\nقم بكتابة`/تحديث` لتحديث قائمة المشرفين",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
-                            InlineKeyboardButton("📣 قناة السورس", url=f"https://t.me/J_X_S3"),
-                            InlineKeyboardButton("💭 Support", url=f"https://t.me/J_X_S9")
+                            InlineKeyboardButton("📣 قناة البوت", url=f"https://t.me/{UPDATES_CHANNEL}"),
+                            InlineKeyboardButton("💭 جروب الدعم", url=f"https://t.me/{GROUP_SUPPORT}")
                         ],
                         [
-                            InlineKeyboardButton("👤 حساب المساعد", url=f"https://t.me/{ass_uname}")
-                        ]
+                            InlineKeyboardButton(
+                        ALIVE_NAME, url=f"https://t.me/{ass_uname}"),
+                        ],
+                        [
+                            InlineKeyboardButton(
+                        "♡اضـف الـبـوت لـمـجـمـوعـتـك♡",
+                        url=f'https://t.me/{BOT_USERNAME}?startgroup=true'),
+                        ],
                     ]
                 )
             )
@@ -203,3 +211,4 @@ async def chat_watcher_func(_, message: Message):
         await message.reply_text(
             f"👮🏼 (> {suspect} <)\n\n**Gbanned** user detected, that user has been gbanned by sudo user and was blocked from this Chat !\n\n🚫 **Reason:** potential spammer and abuser."
         )
+
