@@ -11,8 +11,13 @@ from pyrogram.types import (
 def stream_markup(user_id):
   buttons = [
     [
-      InlineKeyboardButton(text="• Mᴇɴᴜ", callback_data=f'stream_menu_panel | {user_id}'),
-      InlineKeyboardButton(text="• Cʟᴏsᴇ", callback_data=f'set_close'),
+      InlineKeyboardButton(text="• الـقـائـمـه♪", callback_data=f'cbmenu | {user_id}'),
+      InlineKeyboardButton(text="• الـتـحـديـثـات♪", url=f'https://t.me/sseroc'),
+    ],
+    [
+    InlineKeyboardButton(
+                        "♡اضـف الـبـوت لـمـجـمـوعـتـك♡",
+                        url=f'https://t.me/{BOT_USERNAME}?startgroup=true'),
     ],
   ]
   return buttons
@@ -21,16 +26,16 @@ def stream_markup(user_id):
 def menu_markup(user_id):
   buttons = [
     [
-      InlineKeyboardButton(text="⏹", callback_data=f'set_stop | {user_id}'),
-      InlineKeyboardButton(text="⏸", callback_data=f'set_pause | {user_id}'),
-      InlineKeyboardButton(text="▶️", callback_data=f'set_resume | {user_id}'),
+      InlineKeyboardButton(text="⏹", callback_data=f'cbstop | {user_id}'),
+      InlineKeyboardButton(text="⏸", callback_data=f'cbpause | {user_id}'),
+      InlineKeyboardButton(text="▶️", callback_data=f'cbresume | {user_id}'),
     ],
     [
-      InlineKeyboardButton(text="🔇", callback_data=f'set_mute | {user_id}'),
-      InlineKeyboardButton(text="🔊", callback_data=f'set_unmute | {user_id}'),
+      InlineKeyboardButton(text="🔇", callback_data=f'cbmute | {user_id}'),
+      InlineKeyboardButton(text="🔊", callback_data=f'cbunmute | {user_id}'),
     ],
     [
-      InlineKeyboardButton(text="🔙 Go Back", callback_data='stream_home_panel'),
+      InlineKeyboardButton(text="🗑 اغلاق", callback_data='cls'),
     ]
   ]
   return buttons
@@ -40,7 +45,7 @@ close_mark = InlineKeyboardMarkup(
   [
     [
       InlineKeyboardButton(
-        "🗑 Close", callback_data="set_close"
+        "🔙 رجوع", callback_data="cbmenu"
       )
     ]
   ]
@@ -51,7 +56,7 @@ back_mark = InlineKeyboardMarkup(
   [
     [
       InlineKeyboardButton(
-        "🔙 Go Back", callback_data="stream_menu_panel"
+        "🔙 رجوع", callback_data="cbmenu"
       )
     ]
   ]
